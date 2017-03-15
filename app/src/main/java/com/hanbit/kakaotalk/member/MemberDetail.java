@@ -191,7 +191,7 @@ public class MemberDetail extends AppCompatActivity{
                 return memberDetail.list("select _id AS id,name,phone,age,address,salary from member where _id='"+params+"';");
             }
         };
-        ArrayList<Map<String,String>> member= (ArrayList<Map<String, String>>) service.list(id);
+        final ArrayList<Map<String,String>> member= (ArrayList<Map<String, String>>) service.list(id);
         Toast.makeText(MemberDetail.this,"id값 확인"+id,Toast.LENGTH_LONG).show();
         tvIdContent.setText(member.get(0).get("id"));
         tvNameContent.setText(member.get(0).get("name"));
@@ -203,8 +203,7 @@ public class MemberDetail extends AppCompatActivity{
         btDial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel: "));
-                //intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel: " + map.get("phoneNum")));
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel: "+member.get(0).get("phone")));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }

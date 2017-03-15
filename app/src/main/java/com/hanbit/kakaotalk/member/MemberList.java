@@ -1,11 +1,13 @@
 package com.hanbit.kakaotalk.member;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -19,9 +21,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hanbit.kakaotalk.R;
+import com.hanbit.kakaotalk.action.IDelete;
 import com.hanbit.kakaotalk.action.IList;
 import com.hanbit.kakaotalk.factory.LayoutParamsFactory;
 import com.hanbit.kakaotalk.factory.ReadQuery;
+import com.hanbit.kakaotalk.factory.WriteQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +37,6 @@ import java.util.Map;
  */
 
 public class MemberList extends AppCompatActivity {
-    LinearLayout uiItem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,19 +55,40 @@ public class MemberList extends AppCompatActivity {
                 return memberList.list("select _id AS id, name, phone, age, address, salary from member;");
             }
         };
-        final ArrayList<Map<String,String>>memberMap= (ArrayList<Map<String, String>>) service.list();
-        listView.setAdapter(new MemberAdapter(memberMap,context));
+        final DeleteDAO dao=new DeleteDAO(context);
+        final IDelete delelteService=new IDelete() {
+            @Override
+            public void update(Object o) {
+                dao.update(String.format("delete from member where _id='%s'",(String)o));
+            }
+        };
+        final ArrayList<Map<String,String>>member= (ArrayList<Map<String, String>>) service.list();
+        listView.setAdapter(new MemberAdapter(member,context));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int i, long l) {
                 Intent intent=new Intent(context,MemberDetail.class);
-                intent.putExtra("id",memberMap.get(i).get("id"));
+                intent.putExtra("id",member.get(i).get("id"));
                 startActivity(intent);
             }
         });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View v, int i, long l) {
+                final String id=member.get(i).get("id");
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("멤버 삭제").setMessage("삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int whichButton){
+                        delelteService.update(id);
+                        startActivity(new Intent(context,MemberList.class));
+                    }
+                }).setNegativeButton("취소", new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int whichButton){
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 return false;
             }
         });
@@ -97,6 +121,17 @@ public class MemberList extends AppCompatActivity {
             return members;
         }
     }
+
+    class DeleteDAO extends WriteQuery{
+        public DeleteDAO(Context context) {
+            super(context);
+        }
+        @Override
+        public void update(String sql) {
+            super.getDatabase().execSQL(sql);
+        }
+    }
+
     class MemberAdapter extends BaseAdapter {
         ArrayList<Map<String,String>> list;
         LayoutInflater inflater;
@@ -123,7 +158,7 @@ public class MemberList extends AppCompatActivity {
         public View getView(int i, View v, ViewGroup g) {
             ViewHoler holder;
             if(v==null) {
-                uiItem=new LinearLayout(MemberList.this);
+                LinearLayout uiItem=new LinearLayout(MemberList.this);
                 uiItem.setLayoutParams(LayoutParamsFactory.createLayoutParams("mm"));
                 uiItem.setPadding(8, 8, 8, 8);
                 ImageView profileImg = new ImageView(MemberList.this);

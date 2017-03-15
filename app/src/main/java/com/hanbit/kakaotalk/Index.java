@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hanbit.kakaotalk.member.MemberList;
 
@@ -46,7 +45,6 @@ public class Index extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"Hi",Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(context, MemberList.class));
             }
         });
