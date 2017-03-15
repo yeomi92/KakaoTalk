@@ -20,7 +20,6 @@
         <activity android:name=".member.MemberList"/>
         <activity android:name=".member.MemberUpdate"/>
         <activity android:name=".member.MemberAdd"/>
-        <activity android:name=".member.MemberDelete"/>
         <activity android:name=".message.MessageList"/>
         <activity android:name=".message.MessageWriter"/>
     </application>

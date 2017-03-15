@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.hanbit.kakaotalk.member.MemberAdd;
 import com.hanbit.kakaotalk.member.MemberList;
 
 public class Index extends AppCompatActivity {
@@ -35,6 +36,11 @@ public class Index extends AppCompatActivity {
         btn.setLayoutParams(matchAndWrap);
         btn.setBackgroundColor(Color.parseColor("#00ff00"));
         ui.addView(btn);
+        Button btnAdd=new Button(context);
+        btnAdd.setText("ADD");
+        btnAdd.setLayoutParams(matchAndWrap);
+        btnAdd.setBackgroundColor(Color.parseColor("#ff0000"));
+        ui.addView(btnAdd);
         setContentView(ui);
         ViewGroup.MarginLayoutParams tvMargin=new ViewGroup.MarginLayoutParams(tv.getLayoutParams());
         tvMargin.setMargins(0,200,0,0);
@@ -48,6 +54,13 @@ public class Index extends AppCompatActivity {
                 startActivity(new Intent(context, MemberList.class));
             }
         });
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(context, MemberAdd.class));
+            }
+        });
+
 
 
     }

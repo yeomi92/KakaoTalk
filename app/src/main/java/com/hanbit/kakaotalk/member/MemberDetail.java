@@ -32,9 +32,9 @@ import java.util.Map;
 public class MemberDetail extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Intent intent=this.getIntent();
         final String id=intent.getExtras().getString("id").toString();
-        super.onCreate(savedInstanceState);
         final Context context=MemberDetail.this;
         LinearLayout ui=new LinearLayout(context);
         LinearLayout.LayoutParams weight=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT,1);
