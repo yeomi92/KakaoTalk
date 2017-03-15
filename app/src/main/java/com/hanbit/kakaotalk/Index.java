@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hanbit.kakaotalk.member.MemberDetail;
+import com.hanbit.kakaotalk.member.MemberList;
 
 public class Index extends AppCompatActivity {
 
@@ -47,7 +47,7 @@ public class Index extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context,"Hi",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(context, MemberDetail.class));
+                startActivity(new Intent(context, MemberList.class));
             }
         });
 

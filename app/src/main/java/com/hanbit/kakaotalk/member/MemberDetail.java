@@ -2,6 +2,8 @@ package com.hanbit.kakaotalk.member;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,8 +14,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.hanbit.kakaotalk.action.IDetail;
 import com.hanbit.kakaotalk.factory.LayoutParamsFactory;
+import com.hanbit.kakaotalk.factory.ReadQuery;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hb2008 on 2017-03-15.
@@ -22,6 +32,8 @@ import com.hanbit.kakaotalk.factory.LayoutParamsFactory;
 public class MemberDetail extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Intent intent=this.getIntent();
+        final String id=intent.getExtras().getString("id").toString();
         super.onCreate(savedInstanceState);
         final Context context=MemberDetail.this;
         LinearLayout ui=new LinearLayout(context);
@@ -171,6 +183,22 @@ public class MemberDetail extends AppCompatActivity{
         uiButton5.addView(btList);
         uiButton5.addView(btUpdate);
         ui.addView(uiButton5);
+
+        final MemDetail memberDetail=new MemDetail(context);
+        IDetail service=new IDetail() {
+            @Override
+            public List<?> list(String params) {
+                return memberDetail.list("select _id AS id,name,phone,age,address,salary from member where _id='"+params+"';");
+            }
+        };
+        ArrayList<Map<String,String>> member= (ArrayList<Map<String, String>>) service.list(id);
+        Toast.makeText(MemberDetail.this,"id값 확인"+id,Toast.LENGTH_LONG).show();
+        tvIdContent.setText(member.get(0).get("id"));
+        tvNameContent.setText(member.get(0).get("name"));
+        tvPhoneContent.setText(member.get(0).get("phone"));
+        tvAgeContent.setText(member.get(0).get("age"));
+        tvAddressContent.setText(member.get(0).get("address"));
+        tvSalaryContent.setText(member.get(0).get("salary"));
         setContentView(ui);
         btDial.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,10 +220,36 @@ public class MemberDetail extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(context, MemberUpdate.class);
-                intent.putExtra("id","");
-                //intent.putExtra("id",map.get("id"));
+                intent.putExtra("id",id);
                 startActivity(intent);
             }
         });
+    }
+    class MemDetail extends ReadQuery {
+
+        public MemDetail(Context context) {
+            super(context);
+        }
+
+        @Override
+        public List<?> list(String sql) {
+            Map<String,String> map;
+            ArrayList<Map<String,String>> members=new ArrayList<>();
+            SQLiteDatabase db=super.getDatabase();
+            Cursor cursor=db.rawQuery(sql,null);
+            if(cursor!=null) {
+                if (cursor.moveToNext()){
+                    map=new HashMap<>();
+                    map.put("id",cursor.getString(cursor.getColumnIndex("id")));
+                    map.put("name",cursor.getString(cursor.getColumnIndex("name")));
+                    map.put("age",cursor.getString(cursor.getColumnIndex("age")));
+                    map.put("phone",cursor.getString(cursor.getColumnIndex("phone")));
+                    map.put("address",cursor.getString(cursor.getColumnIndex("address")));
+                    map.put("salary",cursor.getString(cursor.getColumnIndex("salary")));
+                    members.add(map);
+                }
+            }
+            return members;
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.hanbit.kakaotalk.member;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
@@ -10,16 +11,18 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.hanbit.kakaotalk.R;
 import com.hanbit.kakaotalk.action.IList;
 import com.hanbit.kakaotalk.factory.LayoutParamsFactory;
 import com.hanbit.kakaotalk.factory.ReadQuery;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +37,7 @@ public class MemberList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Context context=MemberList.this;
+        final Context context=MemberList.this;
         LinearLayout ui=new LinearLayout(context);
         ui.setLayoutParams(LayoutParamsFactory.createLayoutParams("mm"));
         ListView listView=new ListView(context);
@@ -51,6 +54,20 @@ public class MemberList extends AppCompatActivity {
         };
         final ArrayList<Map<String,String>>memberMap= (ArrayList<Map<String, String>>) service.list();
         listView.setAdapter(new MemberAdapter(memberMap,context));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int i, long l) {
+                Intent intent=new Intent(context,MemberDetail.class);
+                intent.putExtra("id",memberMap.get(i).get("id"));
+                startActivity(intent);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View v, int i, long l) {
+                return false;
+            }
+        });
     }
     class MemList extends ReadQuery {
         public MemList(Context context) {
@@ -63,9 +80,7 @@ public class MemberList extends AppCompatActivity {
             ArrayList<Map<String,String>> members=new ArrayList<>();
             SQLiteDatabase db=super.getDatabase();
             Cursor cursor=db.rawQuery(sql,null);
-            Toast.makeText(MemberList.this,"MemList에 들어옴",Toast.LENGTH_LONG).show();
             if(cursor!=null) {
-                Toast.makeText(MemberList.this,"MemList의 map method if문에 들어옴",Toast.LENGTH_LONG).show();
                 if (cursor.moveToFirst()){
                     do{
                         map=new HashMap<>();
