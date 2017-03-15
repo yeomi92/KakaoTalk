@@ -59,7 +59,7 @@ public class MemberList extends AppCompatActivity {
 
         @Override
         public List<?> list(String sql) {
-            Map<String,String> map=new HashMap<>();
+            Map<String,String> map;
             ArrayList<Map<String,String>> members=new ArrayList<>();
             SQLiteDatabase db=super.getDatabase();
             Cursor cursor=db.rawQuery(sql,null);
@@ -68,6 +68,7 @@ public class MemberList extends AppCompatActivity {
                 Toast.makeText(MemberList.this,"MemList의 map method if문에 들어옴",Toast.LENGTH_LONG).show();
                 if (cursor.moveToFirst()){
                     do{
+                        map=new HashMap<>();
                         map.put("id",cursor.getString(cursor.getColumnIndex("id")));
                         map.put("name",cursor.getString(cursor.getColumnIndex("name")));
                         map.put("age",cursor.getString(cursor.getColumnIndex("age")));
