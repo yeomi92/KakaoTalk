@@ -87,7 +87,7 @@ public class MemberList extends AppCompatActivity {
         private int[] photos={R.drawable.cupcake,R.drawable.donut,R.drawable.eclair,R.drawable.froyo,R.drawable.gingerbread,R.drawable.honeycomb,R.drawable.icecream,R.drawable.jellybean,R.drawable.kitkat,R.drawable.lollipop,R.drawable.cupcake,R.drawable.donut};
         public MemberAdapter(ArrayList<?> list, Context context) {
             this.list = (ArrayList<Map<String, String>>) list;
-            this.inflater= LayoutInflater.from(context);//inflater에 바로 context값 전달
+            this.inflater= LayoutInflater.from(context);
         }
 
         @Override
