@@ -1,6 +1,7 @@
 package com.hanbit.kakaotalk;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.hanbit.kakaotalk.member.MemberDetail;
 
 public class Index extends AppCompatActivity {
 
@@ -44,9 +47,11 @@ public class Index extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context,"Hi",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(context, MemberDetail.class));
             }
         });
 
 
     }
 }
+//message title,content, writedate, sender, receiver
