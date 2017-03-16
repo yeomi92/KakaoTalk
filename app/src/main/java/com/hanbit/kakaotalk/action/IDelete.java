@@ -5,5 +5,5 @@ package com.hanbit.kakaotalk.action;
  */
 
 public interface IDelete {
-    public void update(Object o);
+    public void update();
 }

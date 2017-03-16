@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.hanbit.kakaotalk.R;
 import com.hanbit.kakaotalk.action.IDelete;
 import com.hanbit.kakaotalk.action.IList;
+import com.hanbit.kakaotalk.factory.CompositeCompo;
 import com.hanbit.kakaotalk.factory.LayoutParamsFactory;
 import com.hanbit.kakaotalk.factory.ReadQuery;
 import com.hanbit.kakaotalk.factory.WriteQuery;
@@ -33,35 +34,28 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by hb2008 on 2017-03-15.
- */
+* @Create: 2017-03-16
+* @Auth: Wendy
+* @Story: 친구목록을 보여준다.
+* @Nested Class: ListDAO,UpdateDAO,ViewHoler
+**/
 
 public class MemberList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Context context=MemberList.this;
-        LinearLayout ui=new LinearLayout(context);
-        ui.setLayoutParams(LayoutParamsFactory.createLayoutParams("mm"));
-        ListView listView=new ListView(context);
-        listView.setLayoutParams(LayoutParamsFactory.createLayoutParams("mm"));
-        ui.addView(listView);
-        setContentView(ui);
-
-        final MemList memberList=new MemList(context);
+        HashMap<?,?>initMap=init(context);
+        final Map<String,String>map=new HashMap<>();
+        final ListView listView= (ListView) initMap.get("MemberListView");
+        final ListDAO daoList=new ListDAO(context);
         IList service=new IList() {
             @Override
             public List<?> list() {
-                return memberList.list("select _id AS id, name, phone, age, address, salary from member;");
+                return daoList.list("select _id AS id, name, phone, age, address, salary from member;");
             }
         };
-        final DeleteDAO dao=new DeleteDAO(context);
-        final IDelete delelteService=new IDelete() {
-            @Override
-            public void update(Object o) {
-                dao.update(String.format("delete from member where _id='%s'",(String)o));
-            }
-        };
+        final DeleteDAO daoDelete=new DeleteDAO(context);
         final ArrayList<Map<String,String>>member= (ArrayList<Map<String, String>>) service.list();
         listView.setAdapter(new MemberAdapter(member,context));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,26 +69,33 @@ public class MemberList extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View v, int i, long l) {
-                final String id=member.get(i).get("id");
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("멤버 삭제").setMessage("삭제하시겠습니까?").setCancelable(false).setPositiveButton("확인", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int whichButton){
-                        delelteService.update(id);
+                Map<String,String>temp=(Map<String, String>)listView.getItemAtPosition(i);
+                map.clear();
+                map.put("id",temp.get("id"));
+                new AlertDialog.Builder(context).setTitle("멤버삭제").setMessage("삭제하시겠습니까?").setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        IDelete delelteService=new IDelete() {
+                            @Override
+                            public void update() {
+                                daoDelete.update(String.format("delete from member where _id='%s'",map.get("id")));
+                            }
+                        };
+                        delelteService.update();
                         startActivity(new Intent(context,MemberList.class));
                     }
-                }).setNegativeButton("취소", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int whichButton){
-                        dialog.cancel();
+                }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
                     }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return false;
+                }).show();
+                return true;
             }
         });
     }
-    class MemList extends ReadQuery {
-        public MemList(Context context) {
+    class ListDAO extends ReadQuery {
+        public ListDAO(Context context) {
             super(context);
         }
 
@@ -193,5 +194,11 @@ public class MemberList extends AppCompatActivity {
     static class ViewHoler{
         ImageView profileImg;
         TextView tvName,tvPhone;
+    }
+    public HashMap<?,?> init(Context context){
+        CompositeCompo compo=new CompositeCompo(context,"MemberList");
+        compo.execute();
+        setContentView(compo.getFrame());
+        return compo.getComponents();
     }
 }
