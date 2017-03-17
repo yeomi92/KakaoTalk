@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.hanbit.kakaotalk.action.IDetail;
 import com.hanbit.kakaotalk.factory.CompositeCompo;
 import com.hanbit.kakaotalk.factory.ReadQuery;
+import com.hanbit.kakaotalk.message.MessageWriter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,9 +45,9 @@ public class MemberDetail extends AppCompatActivity{
         final ArrayList<Map<String,String>> member= (ArrayList<Map<String, String>>) service.list(id);
         TextView tvIdContent=(TextView)initMap.get("Id");
         tvIdContent.setText(member.get(0).get("id"));
-        TextView tvNameContent=(TextView)initMap.get("Name");
+        final TextView tvNameContent=(TextView)initMap.get("Name");
         tvNameContent.setText(member.get(0).get("name"));
-        TextView tvPhoneContent=(TextView)initMap.get("Phone");
+        final TextView tvPhoneContent=(TextView)initMap.get("Phone");
         tvPhoneContent.setText(member.get(0).get("phone"));
         TextView tvAgeContent=(TextView)initMap.get("Age");
         tvAgeContent.setText(member.get(0).get("age"));
@@ -79,6 +80,15 @@ public class MemberDetail extends AppCompatActivity{
             public void onClick(View v) {
                 Intent intent=new Intent(context, MemberUpdate.class);
                 intent.putExtra("id",id);
+                startActivity(intent);
+            }
+        });
+        Button btSMS= (Button) initMap.get("SMS");
+        btSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(context, MessageWriter.class);
+                intent.putExtra("spec",id+","+tvPhoneContent.getText().toString()+","+tvNameContent.getText().toString());
                 startActivity(intent);
             }
         });
